@@ -6,6 +6,8 @@ const session = require('express-session');
 const helmet = require('helmet');
 const bcrypt = require('bcrypt');
 const recaptcha = require('../config/recaptcha');
+const crypto = require('crypto');
+const cryptoConfig = require('../config/crypto.json');
 
 const app = express();
 const PORT = 3000;
@@ -61,6 +63,16 @@ app.use(
 // Création dossiers logs si nécessaire
 const logsDir = path.join(__dirname, '../logs');
 if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
+//fonction de chifffrement des messages
+function encrypt(text) {
+  const key = Buffer.from(cryptoConfig.key, 'hex');
+  const iv = Buffer.from(cryptoConfig.iv, 'hex');
+  const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+  let encrypted = cipher.update(text, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  return encrypted;
+}
+
 
 // Middleware de journalisation basique (access.log)
 app.use((req, res, next) => {
@@ -71,12 +83,12 @@ app.use((req, res, next) => {
 
 // Utilisateur en mémoire
 const user = {
-  email: 'user@example.com',
+  email: 'admin@example.com',
   passwordHash: bcrypt.hashSync('password123', 12)
 };
 
 // Routes
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../public/index.html')));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../public/login.html')));
 
 app.post('/login', async (req, res) => {
   try {
@@ -98,13 +110,23 @@ app.post('/contact', async (req, res) => {
     if (!req.session.authenticated) return res.redirect('/');
     const { nom, email, message, 'g-recaptcha-response': token } = req.body;
     if (!token || !await recaptcha.verify(token)) throw new Error('Captcha invalide');
-    console.log(`Message de ${nom} <${email}>: ${message}`);
+
+    const dataToEncrypt = JSON.stringify({ nom, email, message, date: new Date().toISOString() });
+    const encryptedMessage = encrypt(dataToEncrypt);
+
+    // Écriture dans messages.json
+    const messagesPath = path.join(__dirname, '../logs/messages.json');
+    const existing = fs.existsSync(messagesPath) ? JSON.parse(fs.readFileSync(messagesPath)) : [];
+    existing.push({ encrypted: encryptedMessage });
+    fs.writeFileSync(messagesPath, JSON.stringify(existing, null, 2));
+
     return res.send('Message envoyé avec succès');
   } catch (err) {
     fs.appendFileSync(path.join(logsDir, 'error.log'), `${new Date().toISOString()} - ${err.message}\n`);
     return res.status(500).send("Erreur lors de l'envoi du message");
   }
 });
+
 
 // Démarrage HTTPS
 https.createServer(options, app).listen(PORT, () => {

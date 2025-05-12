@@ -1,4 +1,3 @@
-// validation.js : validation client-side pour login et contact
 
 // Valide le formulaire de connexion
 function validateLogin() {
