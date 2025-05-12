@@ -2,23 +2,222 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <title>Contactez-nous</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-  <script src="js/validation.js"></script>
+  <style>
+    :root {
+      --primary: #4361ee;
+      --secondary: #3f37c9;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --success: #4cc9f0;
+      --error: #f72585;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .contact-container {
+      background: rgba(255, 255, 255, 0.95);
+      width: 100%;
+      max-width: 500px;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      animation: fadeIn 0.6s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .contact-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .contact-header h2 {
+      color: var(--dark);
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .contact-header p {
+      color: #6c757d;
+      font-size: 14px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 15px 20px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s;
+      background-color: #f8f9fa;
+    }
+    
+    .form-group textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+      outline: none;
+      background-color: white;
+    }
+    
+    .form-group label {
+      position: absolute;
+      left: 20px;
+      top: 15px;
+      color: #6c757d;
+      font-size: 16px;
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+    
+    .form-group input:focus + label,
+    .form-group input:not(:placeholder-shown) + label,
+    .form-group textarea:focus + label,
+    .form-group textarea:not(:placeholder-shown) + label {
+      top: -10px;
+      left: 10px;
+      font-size: 12px;
+      background: white;
+      padding: 0 5px;
+      color: var(--primary);
+    }
+    
+    .g-recaptcha {
+      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .submit-btn:hover {
+      background: var(--secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .contact-info {
+      margin-top: 25px;
+      text-align: center;
+      font-size: 14px;
+      color: #6c757d;
+    }
+    
+    .contact-info a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .contact-info a:hover {
+      text-decoration: underline;
+    }
+    
+    @media (max-width: 576px) {
+      .contact-container {
+        padding: 30px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Formulaire de contact</h2>
+  <div class="contact-container">
+    <div class="contact-header">
+      <h2>Contactez-nous</h2>
+      <p>Nous serons ravis de répondre à vos questions</p>
+    </div>
+    
     <form action="/contact" method="POST" onsubmit="return validateContact()">
-      <input type="text" id="nom" name="nom" placeholder="Nom" required>
-      <input type="email" id="email" name="email" placeholder="Email" required>
-      <textarea id="message" name="message" rows="5" placeholder="Votre message" required></textarea>
+      <div class="form-group">
+        <input type="text" id="nom" name="nom" placeholder=" " required>
+        <label for="nom">Nom complet</label>
+      </div>
+      
+      <div class="form-group">
+        <input type="email" id="email" name="email" placeholder=" " required>
+        <label for="email">Email</label>
+      </div>
+      
+      <div class="form-group">
+        <textarea id="message" name="message" placeholder=" " required></textarea>
+        <label for="message">Votre message</label>
+      </div>
+      
       <div class="g-recaptcha" data-sitekey="6Lf08TYrAAAAANzrCY5_BZkpWqP-VGsRADthN9OL"></div>
-      <button type="submit">Envoyer</button>
+      
+      <button type="submit" class="submit-btn">Envoyer le message</button>
+      
+      <div class="contact-info">
+        Vous pouvez aussi nous contacter par email à <a href="mailto:contact@exemple.com">je.blague@envoyezpas.com</a>
+      </div>
     </form>
   </div>
+
+  <script>
+    function validateContact() {
+      const nom = document.getElementById('nom').value;
+      const email = document.getElementById('email').value;
+      const message = document.getElementById('message').value;
+      
+      if (!nom || !email || !message) {
+        alert('Veuillez remplir tous les champs');
+        return false;
+      }
+      
+      // Validation email simple
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert('Veuillez entrer une adresse email valide');
+        return false;
+      }
+      
+      return true;
+    }
+  </script>
 </body>
 </html>
